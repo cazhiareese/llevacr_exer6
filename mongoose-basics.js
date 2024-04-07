@@ -14,5 +14,21 @@ const Student = mongoose.model('students', {
   age: Number
 });
 
+const newStudent = new Student({
+  stdnum: 123456789,
+  fname: "Juan",
+  lname: "dela Cruz",
+  age: 20
+});
+
+await newStudent.save();
+
+await Student.updateOne(
+  { age: 28 },
+  {$set: {fname: "John"}}
+);
+
 let data = await Student.find({});
+
+await Student.deleteMany();
 console.log(data);
