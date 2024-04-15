@@ -39,6 +39,12 @@ const save = async (req,res) => {
 
 //update operation
 const update = async (req,res) => {
+
+    const flag = 
+    {
+        updatedOne : true
+    }
+    
     try
     {
         //update lname using fname
@@ -46,15 +52,14 @@ const update = async (req,res) => {
             { fname: req.body.fname },
             {$set: {lname: req.body.lname}}
         )
-    
-        let data = await Student.findOne({lname: req.body.lname});
-        res.send(data);
+
+        flag.updatedOne = true;
     }catch (err)
     {
         console.log(err);
-        res.send(err);
+        flag.updatedOne = false;
     }
-      
+    res.send(flag)
 } //end of update
 
 //remove one student using student number
@@ -63,15 +68,24 @@ const remove = async (req,res) => {
     {
         deletedOne : true
     }
-    try{
-        await Student.deleteOne(
-            { stdnum: req.body.stdnum }
-        )
-    }catch (err){
-        console.log(err);
-        flag.deletedOne = false;
+    let data = await Student.findOne({ stdnum: req.body.stdnum });
+
+    if (data != null){
+        try{
+            await Student.deleteOne(
+                { stdnum: req.body.stdnum }
+            )
+            flag.deletedOne = true;
+            
+        }catch (err){
+            console.log(err);
+            flag.deletedOne = false;
+        }
+        res.send(flag)       
+    }else{
+        res.send("stdnum not found");
     }
-    res.send(flag);  
+    
 } //end of remove one
 
 //remove all users
