@@ -1,11 +1,11 @@
 import mongoose from 'mongoose';
 
 
-// connection string for compass
+//connection string
 await mongoose.connect( 'mongodb+srv://clleva:iqLhKIzfq1wqq3i6@cluster0.1e7kih9.mongodb.net/StudentDatabase', {  
  useNewUrlParser: true, useUnifiedTopology: true });
 
-
+//Student model 
 const Student = mongoose.model('students', {
   stdnum: Number,
   fname: String,
@@ -13,13 +13,14 @@ const Student = mongoose.model('students', {
   age: Number
 }, 'studentData');
 
-
+//save operation
 const save = async (req,res) => {
     const flag = 
     {
         inserted : true
     }
 
+    //create new instance of Student
     const newStudent = new Student({
         stdnum: req.body.stdnum,
         fname: req.body.fname,
@@ -34,17 +35,19 @@ const save = async (req,res) => {
         flag.inserted = false;
     }
     res.send(flag);
-}
+} //end of save operation
 
+//update operation
 const update = async (req,res) => {
     try
     {
+        //update lname using fname
         await Student.updateOne(
             { fname: req.body.fname },
-            {$set: {lname: "Parker"}}
+            {$set: {lname: req.body.lname}}
         )
     
-        let data = await Student.findOne({lname: "Parker"});
+        let data = await Student.findOne({lname: req.body.lname});
         res.send(data);
     }catch (err)
     {
@@ -52,25 +55,26 @@ const update = async (req,res) => {
         res.send(err);
     }
       
-}
+} //end of update
 
+//remove one student using student number
 const remove = async (req,res) => {
     const flag = 
     {
         deletedOne : true
     }
     try{
-    await Student.deleteOne(
-        { stdnum: req.body.stdnum }
-    )
+        await Student.deleteOne(
+            { stdnum: req.body.stdnum }
+        )
     }catch (err){
         console.log(err);
         flag.deletedOne = false;
     }
     res.send(flag);  
- 
-}
+} //end of remove one
 
+//remove all users
 const removeAll = async(req,res) =>{
     const flag = 
     {
@@ -85,19 +89,21 @@ const removeAll = async(req,res) =>{
         flag.deleted = false;
         res.send(flag);
     }
-}
+} //end of remove all
 
+//get one user using fname
 const getUser = async (req,res) => {
     let data = await Student.find({ fname: req.query.fname});
     // let data = await Student.find({ fname: req.query.fname}, {fname:1, _id: 0});
     res.send(data);
-}
+} //end of get one
 
+//get all users
 const getAllUser = async (req,res) => {
     // let data = await Student.find({}, {fname:1, _id: 0});
     let data = await Student.find({});
     res.send(data);
-}
+} //end of get all
 
-
+//export objects
 export {save, update, remove, removeAll, getUser, getAllUser}
